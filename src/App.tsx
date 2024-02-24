@@ -21,6 +21,7 @@ function App() {
     ])
 
     const [filter, setFilter] = useState<FilterValuesType>("All")
+
     const onChangeFilter = (filter: FilterValuesType) => {
         setFilter(filter)
     }
@@ -38,6 +39,9 @@ function App() {
     const removeTask = (taskId: string) => {
         setTasks(tasks.filter(t => t.id !== taskId))
     }
+    const changeTaskStatus = (taskId:string, checked:boolean) => {
+        setTasks(tasks.map(t=>t.id===taskId? {...t, isDone:checked}:t))
+    }
 
 
     return (
@@ -46,8 +50,10 @@ function App() {
                       tasks={filteredTask()}
                       removeTask={removeTask}
                       addTask={addTask}
+                      filter={filter}
                       data={"23.02.2024"}
-                      onChangeFilter={onChangeFilter}/>
+                      onChangeFilter={onChangeFilter}
+                      changeTaskStatus={changeTaskStatus}/>
         </div>
     );
 }

@@ -3,11 +3,12 @@ import React from "react";
 type ButtonPropsType = {
     title: string
     callBack:()=>void
+    className?:string
 }
 
-export const Button = ({title,callBack}:ButtonPropsType) => {
+export const Button = ({title,callBack, className}:ButtonPropsType) => {
     return (
-        <button onClick={callBack}>
+        <button className={className} onClick={callBack}>
             {title}
         </button>
     );
