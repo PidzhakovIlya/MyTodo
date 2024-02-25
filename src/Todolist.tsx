@@ -1,19 +1,22 @@
 import React, {ChangeEvent, KeyboardEvent, useState} from "react";
-import {FilterValuesType, TaskType} from "./App";
+import {FilterValuesType, TaskStateType, TaskType} from "./App";
 import {Button} from "./Button";
 
 type TodolistPropsType = {
     title: string
     tasks: TaskType[]
-    removeTask: (id: string) => void
+    removeTask: (todolistId:string, id: string) => void
+    id: string
     data?: string
-    onChangeFilter: (filter: FilterValuesType) => void
-    addTask: (title: string) => void
-    changeTaskStatus: (taskId: string, checked: boolean) => void
+    onChangeFilter: ( id: string, filter: FilterValuesType) => void
+    addTask: (todolistId:string, title: string) => void
+    changeTaskStatus: (todolistId:string, taskId: string, checked: boolean) => void
     filter: FilterValuesType
+    removeTodolist:(id:string)=>void
 }
 
 export const Todolist = ({
+                             id,
                              title,
                              tasks,
                              removeTask,
@@ -21,8 +24,10 @@ export const Todolist = ({
                              onChangeFilter,
                              addTask,
                              changeTaskStatus,
-                             filter
+                             filter,
+                             removeTodolist
                          }: TodolistPropsType) => {
+
     const [titleValue, setTitleValue] = useState<string>("")
     const [error, setError] = useState<string | null>(null)
 
@@ -38,19 +43,23 @@ export const Todolist = ({
 
     const addTaskHandler = () => {
         if (titleValue.trim() !== "") {
-            addTask(titleValue.trim())
+            addTask(id, titleValue.trim())
             setTitleValue("")
         } else {
             setError("Title is Required")
         }
     }
-    const changeTaskStatusHandler = (id: string, checked: boolean) => {
-        changeTaskStatus(id, checked)
+    const changeTaskStatusHandler = (taskId: string, checked: boolean) => {
+        changeTaskStatus(id ,taskId, checked)
     }
 
     return (
         <div>
-            <h3>{title}</h3>
+            <h3>
+                {title}
+                <Button callBack={()=>removeTodolist(id)} title={"X"}/>
+            </h3>
+
             <div>
                 <input className={error ? "error" : undefined} value={titleValue} onChange={changeTaskTitleHandler}
                        onKeyDown={addTaskOnKeyUpHandler}/>
@@ -64,8 +73,8 @@ export const Todolist = ({
                         <li key={t.id}><input type="checkbox"
                                               checked={t.isDone}
                                               onChange={(e) => changeTaskStatusHandler(t.id, e.currentTarget.checked)}/>
-                            <span className={t.isDone ? 'is-done': ''}>{t.title}</span>
-                            <Button title={"X"} callBack={() => removeTask(t.id)}/>
+                            <span className={t.isDone ? "is-done" : ""}>{t.title}</span>
+                            <Button title={"X"} callBack={() => removeTask(id,t.id)}/>
                         </li>)}
                 </ul>
                 : <p>"Тасок нет"</p>
@@ -73,13 +82,13 @@ export const Todolist = ({
             <div>
                 <Button className={filter === "All" ? "active-filter" : ""}
                         title={"All"}
-                        callBack={() => onChangeFilter("All")}/>
+                        callBack={() => onChangeFilter(id, "All")}/>
                 <Button className={filter === "Active" ? "active-filter" : ""}
                         title={"Active"}
-                        callBack={() => onChangeFilter("Active")}/>
+                        callBack={() => onChangeFilter(id,"Active")}/>
                 <Button className={filter === "Completed" ? "active-filter" : ""}
                         title={"Completed"}
-                        callBack={() => onChangeFilter("Completed")}/>
+                        callBack={() => onChangeFilter(id,"Completed")}/>
             </div>
             <div>{data}</div>
         </div>
