@@ -1,6 +1,7 @@
 import {v1} from "uuid";
-import {FilterValuesType, TodolistType} from "../App";
-import {todolistsReducer} from "./todolists-reducer";
+import {FilterValuesType, TasksStateType, TodolistType} from "../App";
+import {removeTodolist, todolistsReducer} from "./todolists-reducer";
+import {tasksReducer} from "./tasks-reducer";
 
 
 test('correct todolist should be removed', ()=>{

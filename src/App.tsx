@@ -6,7 +6,7 @@ import {AddItemForm} from "./components/AddItemForm/AddItemForm";
 import {AppBarHeader} from "./components/AppBarHeader/AppBarHeader";
 import {Container, Grid, Paper} from "@mui/material";
 
-export type TaskStateType = {
+export type TasksStateType = {
     [key: string]: TaskType[]
 }
 
