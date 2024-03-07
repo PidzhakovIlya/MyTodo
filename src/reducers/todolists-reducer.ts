@@ -1,4 +1,3 @@
-import React from "react";
 import {FilterValuesType, TodolistType} from "../App";
 import {v1} from "uuid";
 
@@ -14,14 +13,14 @@ export const todolistsReducer = (state: TodolistType[], action: ActionType) => {
         case "REMOVE-TODOLIST":
             return state.filter(t => t.id !== action.id);
         case "ADD-TODOLIST":
-            let newTodo:TodolistType = {id:action.id, title:action.title, filter:"All"}
+            let newTodo:TodolistType = {id:action.id, title:action.title, filter:"All"};
             return [newTodo, ...state];
         case "CHANGE-TODOLIST-TITLE":
-            return state.map(t=>t.id===action.id? {...t, title: action.title}: t)
+            return state.map(t=>t.id===action.id? {...t, title: action.title}: t);
         case "CHANGE-TODOLIST-FILTER":
-            return state.map(t=>t.id===action.id? {...t, filter: action.filter}: t)
+            return state.map(t=>t.id===action.id? {...t, filter: action.filter}: t);
         default :
-            throw new Error("i don`t understand this type")
+            return state;
     }
 };
 
@@ -30,7 +29,7 @@ export const removeTodolist = (id: string) => {
         type: "REMOVE-TODOLIST",
         id
     } as const
-}
+};
 
 export const addTodolist = (title: string) => {
     return {
@@ -38,7 +37,7 @@ export const addTodolist = (title: string) => {
         title,
         id:v1()
     } as const
-}
+};
 
 export const changeTodolistTitle = (id:string,title: string) => {
     return {
@@ -46,7 +45,7 @@ export const changeTodolistTitle = (id:string,title: string) => {
         id,
         title,
     } as const
-}
+};
 
 export const changeTodolistFilter = (id:string,filter: FilterValuesType) => {
     return {
@@ -54,4 +53,4 @@ export const changeTodolistFilter = (id:string,filter: FilterValuesType) => {
         id,
         filter
     } as const
-}
+};
