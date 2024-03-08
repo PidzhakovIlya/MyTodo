@@ -1,10 +1,18 @@
-import React, {useState} from "react";
+import React, {useReducer, useState} from "react";
 import "./App.css";
 import {Todolist} from "./Todolist";
 import {v1} from "uuid";
 import {AddItemForm} from "./components/AddItemForm/AddItemForm";
 import {AppBarHeader} from "./components/AppBarHeader/AppBarHeader";
 import {Container, Grid, Paper} from "@mui/material";
+import {addTaskAC, changeTaskStatusAC, changeTaskTitleAC, removeTaskAC, tasksReducer} from "./reducers/tasks-reducer";
+import {
+    addTodolistAC,
+    changeTodolistFilterAC,
+    changeTodolistTitleAC,
+    removeTodolistAC,
+    todolistsReducer
+} from "./reducers/todolists-reducer";
 
 export type TasksStateType = {
     [key: string]: TaskType[]
@@ -24,17 +32,17 @@ export type TodolistType = {
 
 export type FilterValuesType = "All" | "Active" | "Completed"
 
-function App() {
+function AppWithReducer() {
 
     let todolistId1 = v1();
     let todolistId2 = v1();
 
-    const [todolists, setTodolist] = useState<TodolistType[]>(
+    const [todolists, dispatchToTodolist] =useReducer(todolistsReducer,
         [{id: todolistId1, title: "What to Learn", filter: "All"},
             {id: todolistId2, title: "What to Learn", filter: "All"}]
     )
 
-    const [tasks, setTasks] = useState<TasksStateType>({
+    const [tasks, dispatchToTasks] = useReducer(tasksReducer, {
         [todolistId1]: [
             {id: v1(), title: "HTML&CSS", isDone: true},
             {id: v1(), title: "JS", isDone: true},
@@ -49,47 +57,35 @@ function App() {
         ]
     })
 
-    // const [tasks, setTasks] = useState<TaskType[]>([
-    //     {id: v1(), title: "HTML&CSS", isDone: true},
-    //     {id: v1(), title: "JS", isDone: true},
-    //     {id: v1(), title: "ReactJS", isDone: false},
-    //     {id: v1(), title: "Redux", isDone: false}
-    // ])
-
-    // const [filter, setFilter] = useState<FilterValuesType>("All")
-
     const onChangeFilter = (id: string, filter: FilterValuesType) => {
-        setTodolist(todolists.map(t => t.id === id ? {...t, filter} : t))
+        dispatchToTodolist(changeTodolistFilterAC(id, filter))
     }
     const addTask = (todolistId: string, title: string) => {
-        const newTask = {id: v1(), title, isDone: false}
-        setTasks({...tasks, [todolistId]: [newTask, ...tasks[todolistId]]})
+        dispatchToTasks(addTaskAC(todolistId, title))
     }
 
 
     const removeTask = (todolistId: string, taskId: string) => {
-        setTasks({...tasks, [todolistId]: tasks[todolistId].filter(t => t.id !== taskId)})
+        dispatchToTasks(removeTaskAC(todolistId,taskId))
     }
-    const changeTaskStatus = (todolistId: string, taskId: string, checked: boolean) => {
-        setTasks({...tasks, [todolistId]: tasks[todolistId].map(t => t.id === taskId ? {...t, isDone: checked} : t)})
+    const changeTaskStatus = (todolistId: string, taskId: string, isDone: boolean) => {
+        dispatchToTasks(changeTaskStatusAC(todolistId, taskId, isDone))
     }
     const removeTodolist = (id: string) => {
-        setTodolist(todolists.filter(t => t.id !== id))
-        delete tasks[id]
-        setTasks({...tasks})
+        dispatchToTodolist(removeTodolistAC(id))
+        dispatchToTasks(removeTodolistAC(id))
     }
     const addTodolist = (title: string) => {
-        const newId = v1()
-        const newTodo: TodolistType = {id: newId, title, filter: "All"}
-        setTodolist([newTodo, ...todolists])
-        setTasks({[newId]: [], ...tasks})
+        let action = addTodolistAC(title)
+        dispatchToTodolist(action)
+        dispatchToTasks(action)
     }
 
     const changeTaskTitle = (todolistId: string, taskId: string, title: string) => {
-        return setTasks({...tasks, [todolistId]: tasks[todolistId].map(t => t.id === taskId ? {...t, title} : t)})
+        return dispatchToTasks(changeTaskTitleAC(todolistId, taskId, title))
     }
     const changeTodolistTitle = (todolistId: string, title: string) => {
-        setTodolist(todolists.map(el => el.id === todolistId ? {...el, title} : el))
+        dispatchToTodolist(changeTodolistTitleAC(todolistId, title))
     }
 
     return (
@@ -132,4 +128,4 @@ function App() {
     );
 }
 
-export default App;
+export default AppWithReducer;
