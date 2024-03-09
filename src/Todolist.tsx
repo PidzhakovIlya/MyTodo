@@ -1,12 +1,11 @@
-import React from "react";
+import React, {useCallback} from "react";
 import {FilterValuesType, TaskType} from "./App";
-// import {Button} from "./Button";
 import {AddItemForm} from "./components/AddItemForm/AddItemForm";
 import {EditableSpan} from "./components/EditableSpan/EditableSpan";
-import Checkbox from "@mui/material/Checkbox";
 import IconButton from "@mui/material/IconButton";
 import Delete from "@mui/icons-material/Delete";
 import Button from "@mui/material/Button";
+import {Task} from "./components/Task/Task";
 
 type TodolistPropsType = {
     title: string
@@ -23,100 +22,82 @@ type TodolistPropsType = {
     changeTodolistTitle: (todoId: string, title: string) => void
 }
 
-export const Todolist = ({
-                             id,
-                             title,
-                             tasks,
-                             removeTask,
-                             data,
-                             onChangeFilter,
-                             addTask,
-                             changeTaskStatus,
-                             filter,
-                             removeTodolist,
-                             changeTaskTitle,
-                             changeTodolistTitle
-                         }: TodolistPropsType) => {
+export const Todolist = React.memo(({
+                                        id,
+                                        title,
+                                        tasks,
+                                        removeTask,
+                                        data,
+                                        onChangeFilter,
+                                        addTask,
+                                        changeTaskStatus,
+                                        filter,
+                                        removeTodolist,
+                                        changeTaskTitle,
+                                        changeTodolistTitle
+                                    }: TodolistPropsType) => {
 
-    // const [titleValue, setTitleValue] = useState<string>("")
-    // const [error, setError] = useState<string | null>(null)
-    //
-    // const changeTaskTitleHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    //     setTitleValue(e.currentTarget.value)
-    // }
-    // const addTaskOnKeyUpHandler = (e: KeyboardEvent<HTMLInputElement>) => {
-    //     setError(null)
-    //     if (e.key == "Enter") {
-    //         addTaskHandler()
-    //     }
-    // }
+            console.log("todolist is called")
 
-    // const addTaskHandler = () => {
-    //     if (titleValue.trim() !== "") {
-    //         addTask(id, titleValue.trim())
-    //         setTitleValue("")
-    //     } else {
-    //         setError("Title is Required")
-    //     }
-    // }
-    const addTaskHandler = (title: string) => {
-        addTask(id, title)
-    }
+            const addTaskHandler = useCallback((title: string) => {
+                addTask(id, title)
+            }, [addTask, id])
 
-    const changeTaskStatusHandler = (taskId: string, checked: boolean) => {
-        changeTaskStatus(id, taskId, checked)
-    }
-    return (
-        <div>
-            <h3>
-                <EditableSpan text={title} onChange={(newTitle) => changeTodolistTitle(id, newTitle)}/>
-                {/*<Button  callBack={() => removeTodolist(id)} title={"X"}/>*/}
-                <IconButton onClick={() => removeTodolist(id)}>
-                    <Delete/>
-                </IconButton>
-            </h3>
-            <AddItemForm addItem={addTaskHandler}/>
-            {tasks.length !== 0 ?
-                <ul>
-                    {tasks.map(t =>
-                        <li key={t.id} className={t.isDone ? "is-done" : ""}>
+            const changeTodolistTitleHandler = useCallback((newTitle: string) => {
+                changeTodolistTitle(id, newTitle)
+            }, [changeTodolistTitle, id])
 
-                            {/*<input type="checkbox"*/}
-                            {/*       checked={t.isDone}*/}
-                            {/*       onChange={(e) => changeTaskStatusHandler(t.id, e.currentTarget.checked)}/>*/}
-                            <Checkbox  checked={t.isDone}
-                                       onChange={(e) => changeTaskStatusHandler(t.id, e.currentTarget.checked)}
-                                       color={'primary'}
-                            />
-                            <EditableSpan text={t.title} onChange={(newTitle) => changeTaskTitle(id, t.id, newTitle)}/>
-                            {/*<span className={t.isDone ? "is-done" : ""}>{t.title}</span>*/}
-                            {/*<Button title={"X"} callBack={() => removeTask(id, t.id)}/>*/}
-                            <IconButton onClick={() => removeTask(id, t.id)}>
-                                <Delete/>
-                            </IconButton>
-                        </li>)}
-                </ul>
-                : <p>"Тасок нет"</p>
+            const filteredTask = (): TaskType[] => {
+                if (filter === "Completed") return tasks.filter(t => t.isDone)
+                if (filter === "Active") return tasks.filter(t => !t.isDone)
+                return tasks
             }
-            <div>
-                <Button variant={filter === "All" ? "outlined" : "contained"}
-                        color="primary"
-                        onClick={() => onChangeFilter(id, "All")}
-                >All
-                </Button>
-                <Button
-                    onClick={() => onChangeFilter(id, "Active")}
-                    variant={filter === "Active" ? "outlined" : "contained"}
-                >Active
-                </Button>
-                <Button
-                    // className={filter === "Completed" ? "active-filter" : ""}
-                    variant={filter === "Completed" ? "outlined" : "contained"}
-                    onClick={() => onChangeFilter(id, "Completed")}
-                >Completed
-                </Button>
-            </div>
-            <div>{data}</div>
-        </div>
-    );
-};
+
+
+            tasks = filteredTask()
+            return (
+                <div>
+                    <h3>
+                        <EditableSpan text={title} onChange={(newTitle) => changeTodolistTitleHandler(newTitle)}/>
+                        <IconButton onClick={() => removeTodolist(id)}>
+                            <Delete/>
+                        </IconButton>
+                    </h3>
+                    <AddItemForm addItem={addTaskHandler}/>
+                    {tasks.length !== 0 ?
+                        <ul>
+                            {tasks.map(t => <Task key={t.id}
+                                                  todolistId={id}
+                                                  task={t}
+                                                  changeTaskStatus={changeTaskStatus}
+                                                  changeTaskTitle={changeTaskTitle}
+                                                  removeTask={removeTask}
+                            />)}
+                        </ul>
+                        : <p>"Тасок нет"</p>
+                    }
+                    <div>
+                        <Button variant={filter === "All" ? "outlined" : "contained"}
+                                color="primary"
+                                onClick={useCallback(() => onChangeFilter(id, "All"), [onChangeFilter, id])}
+                        >All
+                        </Button>
+                        <Button
+                            onClick={useCallback(() => onChangeFilter(id, "Active"), [onChangeFilter, id])}
+                            variant={filter === "Active" ? "outlined" : "contained"}
+                        >Active
+                        </Button>
+                        <Button
+                            variant={filter === "Completed" ? "outlined" : "contained"}
+                            onClick={useCallback(() => onChangeFilter(id, "Completed"), [onChangeFilter, id])}
+                        >Completed
+                        </Button>
+                    </div>
+                    <div>{data}</div>
+                </div>
+            );
+        }
+    )
+;
+
+
