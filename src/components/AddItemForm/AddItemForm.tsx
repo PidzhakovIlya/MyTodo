@@ -41,10 +41,6 @@ export const AddItemForm = React.memo((props: AddItemFormType) => {
 
     return (
         <div>
-            {/*<input className={error ? "error" : undefined}*/}
-            {/*       value={newTitle}*/}
-            {/*       onChange={onChangeHandler}*/}
-            {/*       onKeyDown={onKeyDownHandler}/>*/}
             <TextField
                 error={!!error}
                 value={newTitle}
@@ -54,12 +50,6 @@ export const AddItemForm = React.memo((props: AddItemFormType) => {
                 label={"Title"}
                 helperText={error}
             />
-
-            {/*<Button variant="contained"*/}
-            {/*        color="primary"*/}
-            {/*        style={{maxWidth: "30px", maxHeight: "30px", minWidth: "30px", minHeight: "30px"}}*/}
-            {/*        onClick={addItem}*/}
-            {/*>+</Button>*/}
             <IconButton onClick={addItem} color={"primary"}>
                 <AddBox/>
             </IconButton>
