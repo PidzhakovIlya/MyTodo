@@ -1,4 +1,4 @@
-import React, {useCallback} from "react";
+import React, {useCallback, useMemo} from "react";
 import {FilterValuesType, TaskType} from "./App";
 import {AddItemForm} from "./components/AddItemForm/AddItemForm";
 import {EditableSpan} from "./components/EditableSpan/EditableSpan";
@@ -47,14 +47,16 @@ export const Todolist = React.memo(({
                 changeTodolistTitle(id, newTitle)
             }, [changeTodolistTitle, id])
 
-            const filteredTask = (): TaskType[] => {
-                if (filter === "Completed") return tasks.filter(t => t.isDone)
-                if (filter === "Active") return tasks.filter(t => !t.isDone)
-                return tasks
-            }
+            const filteredTasks = tasks
+
+            const filteredTask = useMemo((): TaskType[] => {
+                if (filter === "Completed") return filteredTasks.filter(t => t.isDone)
+                if (filter === "Active") return filteredTasks.filter(t => !t.isDone)
+                return filteredTasks
+            },[tasks, filter])
 
 
-            tasks = filteredTask()
+
             return (
                 <div>
                     <h3>
@@ -66,7 +68,7 @@ export const Todolist = React.memo(({
                     <AddItemForm addItem={addTaskHandler}/>
                     {tasks.length !== 0 ?
                         <ul>
-                            {tasks.map(t => <Task key={t.id}
+                            {filteredTask.map(t => <Task key={t.id}
                                                   todolistId={id}
                                                   task={t}
                                                   changeTaskStatus={changeTaskStatus}
