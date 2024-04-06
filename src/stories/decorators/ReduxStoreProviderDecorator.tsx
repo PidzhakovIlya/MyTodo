@@ -29,9 +29,9 @@ const initialGlobalState = {
     }
 };
 
-export const storyBookStore = legacy_createStore(rootReducer, initialGlobalState as RootStateType);
+// export const storyBookStore = legacy_createStore(rootReducer ,initialGlobalState as RootStateType);
 
 
 export const ReduxStoreProviderDecorator = (storyFn: () => React.ReactNode) => {
-    return <Provider store={storyBookStore}>{storyFn()}</Provider>
+    // return <Provider store={storyBookStore}>{storyFn()}</Provider>
 }

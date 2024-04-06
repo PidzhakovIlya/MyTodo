@@ -7,7 +7,7 @@ const meta:Meta< typeof AppWithRedux> = {
     title:'TODOLIST/AppWithRedux',
     component: AppWithRedux,
     tags:['autodocs'],
-    decorators:[ReduxStoreProviderDecorator]
+    // decorators:[ReduxStoreProviderDecorator]
 };
 
 export default meta;
