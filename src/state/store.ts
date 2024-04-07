@@ -20,5 +20,5 @@ export type RootStateType = ReturnType<typeof rootReducer>
 type AppDispatchType = ThunkDispatch<RootStateType, unknown, Action>
 
 export const useAppDispatch = ()=>useDispatch<AppDispatchType>()
-export const useAppSelector:TypedUseSelectorHook<RootStateType> = useSelector
+export const useAppSelector :TypedUseSelectorHook<RootStateType> = useSelector
 
