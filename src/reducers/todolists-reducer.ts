@@ -2,7 +2,7 @@ import {FilterValuesType} from "../App";
 import {v1} from "uuid";
 import {Dispatch} from "redux";
 import {todolistApi, TodolistType} from "../api/todolistApi/todolistApi";
-import {RootStateType} from "../state/store";
+import {RootStateType, ThunkType} from "../state/store";
 
 
 type ActionType = ReturnType<typeof removeTodolistAC>
@@ -72,24 +72,24 @@ export const setTodo = (todolists: TodolistType[]) => {
 };
 
 
-export const getTodo = () => (dispatch: Dispatch) => {
+export const getTodo = ():ThunkType => (dispatch) => {
     todolistApi.getTodolists()
         .then(res =>
             dispatch(setTodo(res.data)))
 }
 
-export const addTodolistTC = (title: string) => (dispatch: Dispatch) => {
+export const addTodolistTC = (title: string):ThunkType => (dispatch) => {
     todolistApi.createTodolist(title).then(res =>
         dispatch(addTodolistAC(res.data.data.item))
     )
 }
-export const deleteTodolistTC = (id: string) => (dispatch: Dispatch) => {
+export const deleteTodolistTC = (id: string):ThunkType => (dispatch) => {
     todolistApi.deleteTodolist(id).then(res =>
         dispatch(removeTodolistAC(id))
     )
 }
 
-export const updateTodolistsTC = (id:string, title:string)=>(dispatch:Dispatch)=>{
+export const updateTodolistsTC = (id:string, title:string):ThunkType => (dispatch)=>{
  todolistApi.updateTodolist(id, title)
      .then(res=> dispatch(changeTodolistTitleAC(id, title)))
 }
